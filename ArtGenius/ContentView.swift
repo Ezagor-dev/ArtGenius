@@ -20,16 +20,20 @@ struct ContentView: View {
             VStack {
                 ScrollView { // Wrap the content in a ScrollView
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Prompt:")
+                        Text("Enter your prompt:")
                             .font(.body)
                             .foregroundColor(.secondary)
+                       
                         TextEditor(text: $promptText)
+                        
+                        
                             .frame(height: 100) // Set an initial height for the TextEditor
                             .padding()
                             .overlay(
                                                     RoundedRectangle(cornerRadius: 8)
                                                         .stroke(Color.secondary, lineWidth: 1)
                             ).padding()
+                        
                     }.padding()
                         
                         Button("Generate Image") {
