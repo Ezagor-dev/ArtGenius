@@ -6,80 +6,107 @@
 //
 
 import SwiftUI
-import CoreData
 
 struct ContentView: View {
-    @Environment(\.managedObjectContext) private var viewContext
-
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<Item>
-
+    @State private var promptText = ""
+    @State private var generatedImageURL: String?
+    @State private var isLoading = false
+    
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                    } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
-                    }
-                }
-                .onDelete(perform: deleteItems)
+        VStack {
+            TextField("Enter a prompt", text: $promptText)
+                .padding()
+            
+            Button("Generate Image") {
+                isLoading = true
+                generateImage()
             }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-            Text("Select an item")
-        }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            .padding()
+            .disabled(isLoading)
+            
+            if isLoading {
+                ProgressView("Generating Image...")
+                    .padding()
+            } else if let imageURL = generatedImageURL {
+                ImageURLView(imageURL: imageURL)
             }
         }
     }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
+    
+    func generateImage() {
+        let apiURL = URL(string: "https://api.openai.com/v1/images/generations")!
+        let apiKey = "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"
+        
+        var request = URLRequest(url: apiURL)
+        request.httpMethod = "POST"
+        request.addValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let parameters: [String: Any] = [
+            "model": "dall-e-3",
+            "prompt": promptText,
+            "size": "1024x1024",
+            "quality": "standard",
+            "n": 1
+        ]
+        
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: parameters)
+        } catch {
+            print("Error encoding parameters: \(error)")
+            return
         }
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                isLoading = false
+                
+                if let error = error {
+                    print("Error: \(error)")
+                    return
+                }
+                
+                guard let data = data else {
+                    print("No data received.")
+                    return
+                }
+                
+                do {
+                    let decoder = JSONDecoder()
+                    let result = try decoder.decode(APIResponse.self, from: data)
+                    if let imageURL = result.data.first?.url {
+                        generatedImageURL = imageURL
+                    }
+                } catch {
+                    print("Error decoding JSON: \(error)")
+                }
+            }
+        }.resume()
     }
 }
 
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
+struct APIResponse: Codable {
+    let data: [ImageData]
+}
+
+struct ImageData: Codable {
+    let url: String
+}
+
+struct ImageURLView: View {
+    let imageURL: String
+    
+    var body: some View {
+        if let url = URL(string: imageURL), let imageData = try? Data(contentsOf: url), let uiImage = UIImage(data: imageData) {
+            Image(uiImage: uiImage)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 300, height: 300)
+        } else {
+            Text("Error loading image")
+        }
+    }
+}
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
