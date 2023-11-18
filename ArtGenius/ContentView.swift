@@ -16,6 +16,7 @@ struct ContentView: View {
     @State private var generatedImageURLs: [URL] = []
     @State private var selectedImageIndex: Int?
     @State private var promptHistory: [HistoryItem] = HistoryManager.shared.loadHistory()
+    @State private var selectedImageUrl: URL?
 
 
     var body: some View {
@@ -27,8 +28,8 @@ struct ContentView: View {
                             .font(.headline)
                             .foregroundColor(.secondary)
                             .padding()
-                            
-                       
+                        
+                        
                         TextEditor(text: $promptText)
                             .frame(height: 100)
                             .padding()
@@ -46,30 +47,41 @@ struct ContentView: View {
                     }
                     .padding()
                     .disabled(isLoading)
-                        
+                    
                     if isLoading {
                         ProgressView("Generating Image...")
                             .padding()
                     } else if !generatedImageURLs.isEmpty {
-                        ForEach(generatedImageURLs.indices, id: \.self) { index in
-                            ImageURLView(imageURL: generatedImageURLs[index])
+                        ForEach(generatedImageURLs, id: \.self) { imageUrl in
+                            ImageURLView(imageURL: imageUrl)
                                 .onTapGesture {
-                                    self.selectedImageIndex = index
-                                    self.isShowingFullScreenImage = true
+                                    self.selectedImageUrl = imageUrl
                                 }
                         }
                     }
-                    
-                    NavigationLink("Show History", destination: HistoryView(promptHistory: $promptHistory))
-                        .padding()
                 }
-                .navigationBarTitle("ArtGenius", displayMode: .inline)
+                .background(
+                            NavigationLink(
+                                "",
+                                destination: ImageDetailView(imageURL: selectedImageUrl ?? URL(string: "https://ezagor.com")!),
+                                isActive: Binding<Bool>(
+                                    get: { self.selectedImageUrl != nil },
+                                    set: { if !$0 { self.selectedImageUrl = nil } }
+                                )
+                            )
+                            
+                        )// Add the "Show History" Navigation Link
+                NavigationLink("Show History", destination: HistoryView(promptHistory: $promptHistory))
+                    .padding()
+
+                Spacer() // To ensure the link is not at the bottom of the view
+                        .navigationBarTitle("ArtGenius", displayMode: .inline)
+                    }
+                    .fullScreenCover(isPresented: $isShowingFullScreenImage) {
+                if let selectedImageIndex = selectedImageIndex {
+                    FullScreenImageView(imageURL: generatedImageURLs[selectedImageIndex])
+                }
             }
-            .fullScreenCover(isPresented: $isShowingFullScreenImage) {
-                            if let selectedImageIndex = selectedImageIndex {
-                                    FullScreenImageView(imageURL: generatedImageURLs[selectedImageIndex])
-                                }
-                        }
             
         }
     }

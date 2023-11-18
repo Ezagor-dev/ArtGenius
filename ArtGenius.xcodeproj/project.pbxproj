@@ -19,6 +19,7 @@
 		E66784FD2B08FC7D0060E178 /* ImageURLView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66784FC2B08FC7D0060E178 /* ImageURLView.swift */; };
 		E66784FF2B08FF300060E178 /* HistoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66784FE2B08FF300060E178 /* HistoryItem.swift */; };
 		E66785012B08FF4B0060E178 /* HistoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66785002B08FF4B0060E178 /* HistoryManager.swift */; };
+		E66785032B0920130060E178 /* ImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66785022B0920130060E178 /* ImageDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,7 @@
 		E66784FC2B08FC7D0060E178 /* ImageURLView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageURLView.swift; sourceTree = "<group>"; };
 		E66784FE2B08FF300060E178 /* HistoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryItem.swift; sourceTree = "<group>"; };
 		E66785002B08FF4B0060E178 /* HistoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryManager.swift; sourceTree = "<group>"; };
+		E66785022B0920130060E178 /* ImageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +81,7 @@
 				E66784FC2B08FC7D0060E178 /* ImageURLView.swift */,
 				E66784FE2B08FF300060E178 /* HistoryItem.swift */,
 				E66785002B08FF4B0060E178 /* HistoryManager.swift */,
+				E66785022B0920130060E178 /* ImageDetailView.swift */,
 			);
 			path = ArtGenius;
 			sourceTree = "<group>";
@@ -164,6 +167,7 @@
 				E66784F02B08CF9C0060E178 /* ArtGenius.xcdatamodeld in Sources */,
 				E66784ED2B08CF9C0060E178 /* Persistence.swift in Sources */,
 				E66784FF2B08FF300060E178 /* HistoryItem.swift in Sources */,
+				E66785032B0920130060E178 /* ImageDetailView.swift in Sources */,
 				E66784F72B08F8E40060E178 /* HistoryView.swift in Sources */,
 				E66785012B08FF4B0060E178 /* HistoryManager.swift in Sources */,
 				E66784F92B08FC280060E178 /* FullScreenImageView.swift in Sources */,

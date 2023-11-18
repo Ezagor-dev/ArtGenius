@@ -1,5 +1,5 @@
 //
-//  FullScreenImageView.swift
+//  ImageDetailView.swift
 //  ArtGenius
 //
 //  Created by Ezagor on 18.11.2023.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct FullScreenImageView: View {
+struct ImageDetailView: View {
     let imageURL: URL
     @State private var showShareSheet = false
 
@@ -35,7 +35,6 @@ struct FullScreenImageView: View {
                 Image(systemName: "square.and.arrow.up")
             })
             .sheet(isPresented: $showShareSheet, content: {
-                // This will fetch the image and share it
                 if let imageData = try? Data(contentsOf: imageURL),
                    let uiImage = UIImage(data: imageData) {
                     ActivityViewController(activityItems: [uiImage])
@@ -44,6 +43,3 @@ struct FullScreenImageView: View {
         }
     }
 }
-
-
-
