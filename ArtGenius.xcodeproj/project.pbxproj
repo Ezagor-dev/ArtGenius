@@ -13,6 +13,12 @@
 		E66784EB2B08CF9C0060E178 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E66784EA2B08CF9C0060E178 /* Preview Assets.xcassets */; };
 		E66784ED2B08CF9C0060E178 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66784EC2B08CF9C0060E178 /* Persistence.swift */; };
 		E66784F02B08CF9C0060E178 /* ArtGenius.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E66784EE2B08CF9C0060E178 /* ArtGenius.xcdatamodeld */; };
+		E66784F72B08F8E40060E178 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66784F62B08F8E40060E178 /* HistoryView.swift */; };
+		E66784F92B08FC280060E178 /* FullScreenImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66784F82B08FC280060E178 /* FullScreenImageView.swift */; };
+		E66784FB2B08FC510060E178 /* ActivityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66784FA2B08FC510060E178 /* ActivityViewController.swift */; };
+		E66784FD2B08FC7D0060E178 /* ImageURLView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66784FC2B08FC7D0060E178 /* ImageURLView.swift */; };
+		E66784FF2B08FF300060E178 /* HistoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66784FE2B08FF300060E178 /* HistoryItem.swift */; };
+		E66785012B08FF4B0060E178 /* HistoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66785002B08FF4B0060E178 /* HistoryManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +29,12 @@
 		E66784EA2B08CF9C0060E178 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		E66784EC2B08CF9C0060E178 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		E66784EF2B08CF9C0060E178 /* ArtGenius.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ArtGenius.xcdatamodel; sourceTree = "<group>"; };
+		E66784F62B08F8E40060E178 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		E66784F82B08FC280060E178 /* FullScreenImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenImageView.swift; sourceTree = "<group>"; };
+		E66784FA2B08FC510060E178 /* ActivityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityViewController.swift; sourceTree = "<group>"; };
+		E66784FC2B08FC7D0060E178 /* ImageURLView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageURLView.swift; sourceTree = "<group>"; };
+		E66784FE2B08FF300060E178 /* HistoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryItem.swift; sourceTree = "<group>"; };
+		E66785002B08FF4B0060E178 /* HistoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +73,12 @@
 				E66784EC2B08CF9C0060E178 /* Persistence.swift */,
 				E66784EE2B08CF9C0060E178 /* ArtGenius.xcdatamodeld */,
 				E66784E92B08CF9C0060E178 /* Preview Content */,
+				E66784F62B08F8E40060E178 /* HistoryView.swift */,
+				E66784F82B08FC280060E178 /* FullScreenImageView.swift */,
+				E66784FA2B08FC510060E178 /* ActivityViewController.swift */,
+				E66784FC2B08FC7D0060E178 /* ImageURLView.swift */,
+				E66784FE2B08FF300060E178 /* HistoryItem.swift */,
+				E66785002B08FF4B0060E178 /* HistoryManager.swift */,
 			);
 			path = ArtGenius;
 			sourceTree = "<group>";
@@ -145,7 +163,13 @@
 			files = (
 				E66784F02B08CF9C0060E178 /* ArtGenius.xcdatamodeld in Sources */,
 				E66784ED2B08CF9C0060E178 /* Persistence.swift in Sources */,
+				E66784FF2B08FF300060E178 /* HistoryItem.swift in Sources */,
+				E66784F72B08F8E40060E178 /* HistoryView.swift in Sources */,
+				E66785012B08FF4B0060E178 /* HistoryManager.swift in Sources */,
+				E66784F92B08FC280060E178 /* FullScreenImageView.swift in Sources */,
+				E66784FB2B08FC510060E178 /* ActivityViewController.swift in Sources */,
 				E66784E62B08CF9A0060E178 /* ContentView.swift in Sources */,
+				E66784FD2B08FC7D0060E178 /* ImageURLView.swift in Sources */,
 				E66784E42B08CF9A0060E178 /* ArtGeniusApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
