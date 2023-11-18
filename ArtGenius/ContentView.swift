@@ -24,8 +24,10 @@ struct ContentView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Enter your prompt:")
-                            .font(.body)
+                            .font(.headline)
                             .foregroundColor(.secondary)
+                            .padding()
+                            
                        
                         TextEditor(text: $promptText)
                             .frame(height: 100)
@@ -49,11 +51,13 @@ struct ContentView: View {
                         ProgressView("Generating Image...")
                             .padding()
                     } else if !generatedImageURLs.isEmpty {
-                        ImageURLView(imageURL: generatedImageURLs.last!)
-                            .onTapGesture {
-                                selectedImageIndex = generatedImageURLs.count - 1
-                                isShowingFullScreenImage = true
-                            }
+                        ForEach(generatedImageURLs.indices, id: \.self) { index in
+                            ImageURLView(imageURL: generatedImageURLs[index])
+                                .onTapGesture {
+                                    self.selectedImageIndex = index
+                                    self.isShowingFullScreenImage = true
+                                }
+                        }
                     }
                     
                     NavigationLink("Show History", destination: HistoryView(promptHistory: $promptHistory))
@@ -62,10 +66,11 @@ struct ContentView: View {
                 .navigationBarTitle("ArtGenius", displayMode: .inline)
             }
             .fullScreenCover(isPresented: $isShowingFullScreenImage) {
-                if let selectedImageIndex = selectedImageIndex {
-                        FullScreenImageView(imageURL: generatedImageURLs[selectedImageIndex])
-                    }
-            }
+                            if let selectedImageIndex = selectedImageIndex {
+                                    FullScreenImageView(imageURL: generatedImageURLs[selectedImageIndex])
+                                }
+                        }
+            
         }
     }
             

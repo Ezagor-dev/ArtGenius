@@ -12,6 +12,8 @@ struct HistoryView: View {
     @Binding var promptHistory: [HistoryItem]
     @State private var selectedImage: HistoryItem?
 
+
+
     var body: some View {
         List(promptHistory) { item in
             Text(item.prompt)
