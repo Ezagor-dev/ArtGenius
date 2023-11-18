@@ -6,36 +6,55 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct ContentView: View {
     @State private var promptText = ""
-    @State private var generatedImageURL: String?
+    @State private var generatedImageURL: URL?
     @State private var isLoading = false
-    
+    @State private var isShowingFullScreenImage = false
+
     var body: some View {
-        VStack {
-            TextField("Enter a prompt", text: $promptText)
-                .padding()
-            
-            Button("Generate Image") {
-                isLoading = true
-                generateImage()
-            }
-            .padding()
-            .disabled(isLoading)
-            
-            if isLoading {
-                ProgressView("Generating Image...")
+        NavigationView {
+            VStack {
+                TextField("Enter a prompt", text: $promptText)
                     .padding()
-            } else if let imageURL = generatedImageURL {
-                ImageURLView(imageURL: imageURL)
+
+                Button("Generate Image") {
+                    isLoading = true
+                    generateImage()
+                }
+                .padding()
+                .disabled(isLoading)
+
+                if isLoading {
+                    ProgressView("Generating Image...")
+                        .padding()
+                } else if generatedImageURL != nil {
+                    ImageURLView(imageURL: generatedImageURL!)
+                        .onTapGesture {
+                            isShowingFullScreenImage = true
+                        }
+                }
+            }
+            .navigationBarTitle("ArtGenius", displayMode: .inline)
+        }
+        .fullScreenCover(isPresented: $isShowingFullScreenImage) {
+            if let imageURL = generatedImageURL {
+                FullScreenImageView(imageURL: imageURL)
             }
         }
     }
-    
+    struct APIResponse: Codable {
+        let data: [ImageData]
+    }
+
+    struct ImageData: Codable {
+        let url: String
+    }
     func generateImage() {
         let apiURL = URL(string: "https://api.openai.com/v1/images/generations")!
-        let apiKey = "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"
+        let apiKey = "YOUR_API_KEY"
         
         var request = URLRequest(url: apiURL)
         request.httpMethod = "POST"
@@ -74,7 +93,8 @@ struct ContentView: View {
                 do {
                     let decoder = JSONDecoder()
                     let result = try decoder.decode(APIResponse.self, from: data)
-                    if let imageURL = result.data.first?.url {
+                    if let imageURLString = result.data.first?.url,
+                       let imageURL = URL(string: imageURLString) {
                         generatedImageURL = imageURL
                     }
                 } catch {
@@ -83,33 +103,90 @@ struct ContentView: View {
             }
         }.resume()
     }
-}
 
-struct APIResponse: Codable {
-    let data: [ImageData]
-}
-
-struct ImageData: Codable {
-    let url: String
-}
-
-struct ImageURLView: View {
-    let imageURL: String
     
+}
+struct ImageURLView: View {
+    let imageURL: URL
+
     var body: some View {
-        if let url = URL(string: imageURL), let imageData = try? Data(contentsOf: url), let uiImage = UIImage(data: imageData) {
-            Image(uiImage: uiImage)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 300, height: 300)
-        } else {
-            Text("Error loading image")
+        AsyncImage(url: imageURL) { phase in
+            switch phase {
+            case .success(let image):
+                image
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 300, height: 300)
+            case .failure(_):
+                Text("Error loading image")
+                    .foregroundColor(.red)
+            case .empty:
+                ProgressView()
+            }
         }
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+struct FullScreenImageView: View {
+    let imageURL: URL
+
+    var body: some View {
+        VStack {
+            Spacer()
+            AsyncImage(url: imageURL) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .gesture(
+                            LongPressGesture(minimumDuration: 1.0).onEnded { _ in
+                                saveImageToGallery(image: image)
+                            }
+                        )
+                case .failure(_):
+                    Text("Error loading image")
+                        .foregroundColor(.red)
+                case .empty:
+                    ProgressView()
+                }
+            }
+            Spacer()
+        }
+    }
+    
+    private func saveImageToGallery(image: Image) {
+        // Convert SwiftUI Image to UIImage
+        let uiImage = image.asUIImage()
+
+        // Use UIImageWriteToSavedPhotosAlbum to save the image to the user's gallery
+        UIImageWriteToSavedPhotosAlbum(uiImage, nil, nil, nil)
+
+        // Provide feedback to the user that the image is saved
+        print("Image saved to gallery.")
+    }
+    }
+    struct ContentView_Previews: PreviewProvider {
+        static var previews: some View {
+            ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        }
+    }
+
+extension Image {
+    func asUIImage() -> UIImage {
+        let controller = UIHostingController(rootView: self)
+        controller.view.bounds = CGRect(x: 0, y: 0, width: 100, height: 100) // Set the size as needed
+        let image = controller.view.renderedImage()
+        return image
+    }
+}
+
+extension UIView {
+    func renderedImage() -> UIImage {
+        let renderer = UIGraphicsImageRenderer(size: bounds.size)
+        return renderer.image { _ in
+            drawHierarchy(in: bounds, afterScreenUpdates: true)
+        }
     }
 }
