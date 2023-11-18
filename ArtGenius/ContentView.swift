@@ -10,9 +10,10 @@ import UIKit
 
 struct ContentView: View {
     @State private var promptText = ""
-    @State private var generatedImageURL: URL?
     @State private var isLoading = false
     @State private var isShowingFullScreenImage = false
+    @State private var generatedImageURLs: [URL] = [] // An array to store generated image URLs
+    @State private var selectedImageIndex: Int? // Property to track the selected image index
 
     var body: some View {
         NavigationView {
@@ -22,6 +23,7 @@ struct ContentView: View {
 
                 Button("Generate Image") {
                     isLoading = true
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil) // Close the keyboard
                     generateImage()
                 }
                 .padding()
@@ -30,9 +32,10 @@ struct ContentView: View {
                 if isLoading {
                     ProgressView("Generating Image...")
                         .padding()
-                } else if generatedImageURL != nil {
-                    ImageURLView(imageURL: generatedImageURL!)
+                } else if generatedImageURLs.count > 0 {
+                    ImageURLView(imageURL: generatedImageURLs.last!)
                         .onTapGesture {
+                            selectedImageIndex = generatedImageURLs.count - 1
                             isShowingFullScreenImage = true
                         }
                 }
@@ -40,11 +43,14 @@ struct ContentView: View {
             .navigationBarTitle("ArtGenius", displayMode: .inline)
         }
         .fullScreenCover(isPresented: $isShowingFullScreenImage) {
-            if let imageURL = generatedImageURL {
-                FullScreenImageView(imageURL: imageURL)
+            if let selectedImageIndex = selectedImageIndex {
+                FullScreenImageView(imageURL: generatedImageURLs[selectedImageIndex],
+                                    selectedImageIndex: selectedImageIndex,
+                                    generatedImageURLs: generatedImageURLs)
             }
         }
     }
+
     struct APIResponse: Codable {
         let data: [ImageData]
     }
@@ -52,15 +58,16 @@ struct ContentView: View {
     struct ImageData: Codable {
         let url: String
     }
+
     func generateImage() {
         let apiURL = URL(string: "https://api.openai.com/v1/images/generations")!
         let apiKey = "YOUR_API_KEY"
-        
+
         var request = URLRequest(url: apiURL)
         request.httpMethod = "POST"
         request.addValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
+
         let parameters: [String: Any] = [
             "model": "dall-e-3",
             "prompt": promptText,
@@ -68,34 +75,34 @@ struct ContentView: View {
             "quality": "standard",
             "n": 1
         ]
-        
+
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: parameters)
         } catch {
             print("Error encoding parameters: \(error)")
             return
         }
-        
+
         URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 isLoading = false
-                
+
                 if let error = error {
                     print("Error: \(error)")
                     return
                 }
-                
+
                 guard let data = data else {
                     print("No data received.")
                     return
                 }
-                
+
                 do {
                     let decoder = JSONDecoder()
                     let result = try decoder.decode(APIResponse.self, from: data)
                     if let imageURLString = result.data.first?.url,
                        let imageURL = URL(string: imageURLString) {
-                        generatedImageURL = imageURL
+                        generatedImageURLs.append(imageURL) // Append the generated image URL
                     }
                 } catch {
                     print("Error decoding JSON: \(error)")
@@ -103,9 +110,8 @@ struct ContentView: View {
             }
         }.resume()
     }
-
-    
 }
+
 struct ImageURLView: View {
     let imageURL: URL
 
@@ -129,6 +135,8 @@ struct ImageURLView: View {
 
 struct FullScreenImageView: View {
     let imageURL: URL
+       let selectedImageIndex: Int? // Pass selectedImageIndex as a parameter
+       let generatedImageURLs: [URL] // Pass generatedImageURLs as a parameter
 
     var body: some View {
         VStack {
@@ -141,32 +149,52 @@ struct FullScreenImageView: View {
                         .scaledToFit()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .gesture(
-                            LongPressGesture(minimumDuration: 1.0).onEnded { _ in
-                                saveImageToGallery(image: image)
-                            }
-                        )
-                case .failure(_):
-                    Text("Error loading image")
-                        .foregroundColor(.red)
-                case .empty:
-                    ProgressView()
-                }
-            }
-            Spacer()
+                                                   LongPressGesture(minimumDuration: 1.0).onEnded { _ in
+                                                       if let selectedImageIndex = selectedImageIndex {
+                                                           let imageURL = generatedImageURLs[selectedImageIndex]
+                                                           if let uiImage = UIImage(contentsOfFile: imageURL.path) {
+                                                               shareOrSaveImage(image: uiImage)
+                                                           } else {
+                                                               print("Invalid image URL or failed to load the image.")
+                                                           }
+                                                       } else {
+                                                           print("No image selected.")
+                                                       }
+                                                   }
+                                               )
+                                       case .failure(_):
+                                           Text("Error loading image")
+                                               .foregroundColor(.red)
+                                       case .empty:
+                                           ProgressView()
+                                       }
+                                   }
+                                   Spacer()
         }
+        .navigationBarItems(trailing: Button(action: {
+            if let selectedImageIndex = selectedImageIndex {
+                let imageURL = generatedImageURLs[selectedImageIndex]
+                if let uiImage = UIImage(contentsOfFile: imageURL.path) {
+                    shareOrSaveImage(image: uiImage)
+                } else {
+                    print("Invalid image URL or failed to load the image.")
+                }
+            } else {
+                print("No image selected.")
+            }
+        }) {
+            Image(systemName: "square.and.arrow.up")
+        })
     }
-    
-    private func saveImageToGallery(image: Image) {
-        // Convert SwiftUI Image to UIImage
-        let uiImage = image.asUIImage()
 
-        // Use UIImageWriteToSavedPhotosAlbum to save the image to the user's gallery
-        UIImageWriteToSavedPhotosAlbum(uiImage, nil, nil, nil)
+    // Function to share or save the image
+    private func shareOrSaveImage(image: UIImage) {
+        // Share the image
+        let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+        UIApplication.shared.windows.first?.rootViewController?.present(activityViewController, animated: true, completion: nil)
+    }
+}
 
-        // Provide feedback to the user that the image is saved
-        print("Image saved to gallery.")
-    }
-    }
     struct ContentView_Previews: PreviewProvider {
         static var previews: some View {
             ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
