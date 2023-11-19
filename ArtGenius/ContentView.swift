@@ -109,7 +109,7 @@ struct ContentView: View {
             
             func generateImage() {
                 let apiURL = URL(string: "https://api.openai.com/v1/images/generations")!
-                let apiKey = "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"
+                let apiKey = "YOUR_API_KEY"
                 
                 var request = URLRequest(url: apiURL)
                 request.httpMethod = "POST"
