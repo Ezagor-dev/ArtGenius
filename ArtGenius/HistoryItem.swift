@@ -9,5 +9,5 @@ import Foundation
 struct HistoryItem: Codable, Identifiable {
     let id: UUID
     let prompt: String
-    let imageURL: URL
+    let imageBase64: String
 }

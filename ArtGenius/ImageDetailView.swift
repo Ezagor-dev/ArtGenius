@@ -6,10 +6,10 @@
 //
 
 import SwiftUI
-
 struct ImageDetailView: View {
     let imageURL: URL
     @State private var showShareSheet = false
+    @State private var uiImage: UIImage?
 
     var body: some View {
         GeometryReader { geometry in
@@ -19,8 +19,9 @@ struct ImageDetailView: View {
                     switch phase {
                     case .success(let image):
                         image.resizable().aspectRatio(contentMode: .fit)
-                    case .failure:
-                        Text("Failed to load image")
+                    case .failure(let error):
+                        // Log the error
+                        Text("Failed to load image: \(error.localizedDescription)")
                     case .empty:
                         ProgressView()
                     @unknown default:
@@ -30,16 +31,27 @@ struct ImageDetailView: View {
                 Spacer()
             }
             .navigationBarItems(trailing: Button(action: {
-                showShareSheet = true
+                loadAndShareImage()
             }) {
                 Image(systemName: "square.and.arrow.up")
             })
             .sheet(isPresented: $showShareSheet, content: {
-                if let imageData = try? Data(contentsOf: imageURL),
-                   let uiImage = UIImage(data: imageData) {
+                if let uiImage = self.uiImage {
                     ActivityViewController(activityItems: [uiImage])
                 }
             })
         }
     }
+
+    private func loadAndShareImage() {
+        URLSession.shared.dataTask(with: imageURL) { data, response, error in
+            if let data = data, let image = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    self.uiImage = image
+                    self.showShareSheet = true
+                }
+            }
+        }.resume()
+    }
 }
+

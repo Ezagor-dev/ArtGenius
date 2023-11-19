@@ -8,25 +8,16 @@
 import SwiftUI
 
 struct FullScreenImageView: View {
-    let imageURL: URL
+    let image: UIImage  // Accept a UIImage directly
     @State private var showShareSheet = false
 
     var body: some View {
         GeometryReader { geometry in
             VStack {
                 Spacer()
-                AsyncImage(url: imageURL) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image.resizable().aspectRatio(contentMode: .fit)
-                    case .failure:
-                        Text("Failed to load image")
-                    case .empty:
-                        ProgressView()
-                    @unknown default:
-                        EmptyView()
-                    }
-                }
+                Image(uiImage: image)  // Use the passed UIImage
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
                 Spacer()
             }
             .navigationBarItems(trailing: Button(action: {
@@ -35,15 +26,8 @@ struct FullScreenImageView: View {
                 Image(systemName: "square.and.arrow.up")
             })
             .sheet(isPresented: $showShareSheet, content: {
-                // This will fetch the image and share it
-                if let imageData = try? Data(contentsOf: imageURL),
-                   let uiImage = UIImage(data: imageData) {
-                    ActivityViewController(activityItems: [uiImage])
-                }
+                ActivityViewController(activityItems: [image])
             })
         }
     }
 }
-
-
-
