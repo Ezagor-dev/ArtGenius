@@ -19,12 +19,8 @@ struct ImageData: Codable {
 struct ContentView: View {
     @State private var promptText = ""
     @State private var isLoading = false
-    @State private var isShowingFullScreenImage = false
     @State private var generatedImages: [UIImage] = []
-    @State private var selectedImageIndex: Int?
     @State private var promptHistory: [HistoryItem] = HistoryManager.shared.loadHistory()
-    @State private var selectedImageUrl: URL?
-    
     
     var body: some View {
         NavigationView {
@@ -36,14 +32,10 @@ struct ContentView: View {
                             .foregroundColor(.secondary)
                             .padding()
                         
-                        
                         TextEditor(text: $promptText)
                             .frame(height: 100)
                             .padding()
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color.secondary, lineWidth: 1)
-                            )
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.secondary, lineWidth: 1))
                             .padding()
                     }
                     
@@ -65,36 +57,24 @@ struct ContentView: View {
                                 .scaledToFit()
                                 .frame(width: 300, height: 300)
                                 .onTapGesture {
-                                            self.selectedImageIndex = index
-                                        }
+                                    showImageDetailView(image: generatedImages[index])
+                                }
                         }
-                        .background(
-                            NavigationLink(
-                                "",
-                                destination: ImageDetailView(imageURL: selectedImageUrl ?? URL(string: "https://ezagor.com")!),
-                                isActive: Binding<Bool>(
-                                    get: { self.selectedImageUrl != nil },
-                                    set: { if !$0 { self.selectedImageUrl = nil } }
-                                )
-                            )
-                            
-                        )// Add the "Show History" Navigation Link
-                        NavigationLink("Show History", destination: HistoryView(promptHistory: $promptHistory))
-                            .padding()
-                        
-                        Spacer() // To ensure the link is not at the bottom of the view
-                            .navigationBarTitle("ArtGenius", displayMode: .inline)
                     }
-                       
-                    
                 }
-            } .fullScreenCover(isPresented: $isShowingFullScreenImage) {
-                if let selectedImageIndex = selectedImageIndex, selectedImageIndex < generatedImages.count {
-                    FullScreenImageView(image: generatedImages[selectedImageIndex])
-                }
+                NavigationLink("Show History", destination: HistoryView(promptHistory: $promptHistory))
+                                            .padding()
+                                        
+                                        Spacer() // To ensure the link is not at the bottom of the view
+                                            .navigationBarTitle("ArtGenius", displayMode: .inline)
             }
-            
         }
+    }
+    
+    private func showImageDetailView(image: UIImage) {
+        let imageDetailView = ImageDetailView(image: image)
+        let hostingController = UIHostingController(rootView: imageDetailView)
+        UIApplication.shared.windows.first?.rootViewController?.present(hostingController, animated: true)
     }
             
             
@@ -109,11 +89,11 @@ struct ContentView: View {
             
             func generateImage() {
                 let apiURL = URL(string: "https://api.openai.com/v1/images/generations")!
-                let apiKey = "YOUR_API_KEY"
+                
                 
                 var request = URLRequest(url: apiURL)
                 request.httpMethod = "POST"
-                request.addValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+                request.addValue("Bearer \(Secrets.apiKey)", forHTTPHeaderField: "Authorization")
                 request.addValue("application/json", forHTTPHeaderField: "Content-Type")
                 
                 let parameters: [String: Any] = [

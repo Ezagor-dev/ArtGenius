@@ -6,6 +6,7 @@
 //
 
 import Foundation
+
 struct HistoryItem: Codable, Identifiable {
     let id: UUID
     let prompt: String

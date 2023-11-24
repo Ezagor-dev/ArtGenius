@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct FullScreenImageView: View {
-    let image: UIImage  // Accept a UIImage directly
+    let image: UIImage
     @State private var showShareSheet = false
 
     var body: some View {
         GeometryReader { geometry in
             VStack {
                 Spacer()
-                Image(uiImage: image)  // Use the passed UIImage
+                Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                 Spacer()
@@ -25,9 +25,9 @@ struct FullScreenImageView: View {
             }) {
                 Image(systemName: "square.and.arrow.up")
             })
-            .sheet(isPresented: $showShareSheet, content: {
+            .sheet(isPresented: $showShareSheet) {
                 ActivityViewController(activityItems: [image])
-            })
+            }
         }
     }
 }

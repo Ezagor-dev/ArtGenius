@@ -6,6 +6,7 @@
 //
 
 import Foundation
+
 class HistoryManager {
     static let shared = HistoryManager()
     private let historyKey = "PromptHistory"
@@ -25,8 +26,6 @@ class HistoryManager {
             return try JSONDecoder().decode([HistoryItem].self, from: data)
         } catch {
             print("Unable to load history: \(error)")
-            UserDefaults.standard.removeObject(forKey: historyKey)
-
             return []
         }
     }

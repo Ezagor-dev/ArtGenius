@@ -4,32 +4,27 @@
 //
 //  Created by Ezagor on 18.11.2023.
 //
-
 import SwiftUI
-
-
-// IdentifiableImage struct
-struct IdentifiableImage: Identifiable {
-    let id = UUID()
-    let image: UIImage
-}
+import UIKit
 
 struct HistoryView: View {
     @Binding var promptHistory: [HistoryItem]
-    @State private var selectedIdentifiableImage: IdentifiableImage?
 
     var body: some View {
         List(promptHistory) { item in
             Text(item.prompt)
                 .onTapGesture {
-                    if let uiImage = item.imageBase64.imageFromBase64 {
-                        self.selectedIdentifiableImage = IdentifiableImage(image: uiImage)
+                    if let image = item.imageBase64.imageFromBase64 {
+                        showImageDetailView(image: image)
                     }
                 }
         }
-        .sheet(item: $selectedIdentifiableImage) { identifiableImage in
-            FullScreenImageView(image: identifiableImage.image)
-        }
+    }
+    
+    private func showImageDetailView(image: UIImage) {
+        let imageDetailView = ImageDetailView(image: image)
+        let hostingController = UIHostingController(rootView: imageDetailView)
+        UIApplication.shared.windows.first?.rootViewController?.present(hostingController, animated: true)
     }
 }
 

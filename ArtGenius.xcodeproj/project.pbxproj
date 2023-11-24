@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E6348ABA2B112269003D78AD /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6348AB92B112269003D78AD /* Secrets.swift */; };
 		E66784E42B08CF9A0060E178 /* ArtGeniusApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66784E32B08CF9A0060E178 /* ArtGeniusApp.swift */; };
 		E66784E62B08CF9A0060E178 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66784E52B08CF9A0060E178 /* ContentView.swift */; };
 		E66784E82B08CF9C0060E178 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E66784E72B08CF9C0060E178 /* Assets.xcassets */; };
@@ -23,6 +24,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E6348AB92B112269003D78AD /* Secrets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
 		E66784E02B08CF9A0060E178 /* ArtGenius.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ArtGenius.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E66784E32B08CF9A0060E178 /* ArtGeniusApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtGeniusApp.swift; sourceTree = "<group>"; };
 		E66784E52B08CF9A0060E178 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -82,6 +84,7 @@
 				E66784FE2B08FF300060E178 /* HistoryItem.swift */,
 				E66785002B08FF4B0060E178 /* HistoryManager.swift */,
 				E66785022B0920130060E178 /* ImageDetailView.swift */,
+				E6348AB92B112269003D78AD /* Secrets.swift */,
 			);
 			path = ArtGenius;
 			sourceTree = "<group>";
@@ -165,6 +168,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E66784F02B08CF9C0060E178 /* ArtGenius.xcdatamodeld in Sources */,
+				E6348ABA2B112269003D78AD /* Secrets.swift in Sources */,
 				E66784ED2B08CF9C0060E178 /* Persistence.swift in Sources */,
 				E66784FF2B08FF300060E178 /* HistoryItem.swift in Sources */,
 				E66785032B0920130060E178 /* ImageDetailView.swift in Sources */,
